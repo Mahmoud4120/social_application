@@ -17,7 +17,7 @@ class HomeScreen extends StatelessWidget {
       builder:(context, state) {
         var cubit = SocialCubit.get(context);
         return ConditionalBuilder(
-          condition: cubit.posts.isNotEmpty,
+          condition: cubit.posts.isNotEmpty && cubit.userModel != null,
           builder:(context) {
             return SingleChildScrollView(
               physics: BouncingScrollPhysics(),
@@ -50,7 +50,7 @@ class HomeScreen extends StatelessWidget {
                     ]),
                   ),
                   ListView.separated(
-                    itemBuilder: (context, index) => buildPostItem(cubit.posts[index] , context),
+                    itemBuilder: (context, index) => buildPostItem(cubit.posts[index] , context ,index),
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     separatorBuilder: (context, index) => SizedBox(
@@ -71,7 +71,7 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget buildPostItem(PostModel model , context) => Card(
+  Widget buildPostItem(PostModel model , context , index) => Card(
         color: Colors.white,
         elevation: 5,
         clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -229,7 +229,7 @@ class HomeScreen extends StatelessWidget {
                         SizedBox(
                           width: 5,
                         ),
-                        Text('0'),
+                        Text('${SocialCubit.get(context).likes[index]}'),
                       ],
                     ),
                   ),
@@ -291,7 +291,9 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     children: [
                       InkWell(
-                          onTap: () {},
+                          onTap: () {
+                            SocialCubit.get(context).likePost(SocialCubit.get(context).postsId[index]);
+                          },
                           child: Icon(
                             IconBroken.Heart,
                             color: Colors.red,

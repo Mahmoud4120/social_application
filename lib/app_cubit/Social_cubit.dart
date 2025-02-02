@@ -170,6 +170,7 @@ class SocialCubit extends Cubit<SocialStates> {
       print(' no image selected');
     }
   }
+
   void removePostImage() {
     postImage = null;
     emit(SocialRemovePostImageState());
@@ -199,6 +200,7 @@ class SocialCubit extends Cubit<SocialStates> {
       emit(SocialCreatePostErrorState(error.toString()));
     });
   }
+
   void createPost({
     required String dateTime,
     required String text,
@@ -206,36 +208,64 @@ class SocialCubit extends Cubit<SocialStates> {
   }) {
     emit(SocialCreatePostLoadingState());
     PostModel model = PostModel(
-      name:userModel!.name,
-      uId: userModel!.uId,
-      image: userModel!.image,
-      text: text,
-      dateTime: dateTime,
-      postImage: postImage ?? ''
-    );
+        name: userModel!.name,
+        uId: userModel!.uId,
+        image: userModel!.image,
+        text: text,
+        dateTime: dateTime,
+        postImage: postImage ?? '');
 
     FirebaseFirestore.instance
         .collection('posts')
         .add(model.toMap())
         .then((value) {
-          emit(SocialCreatePostSuccessState());
+      emit(SocialCreatePostSuccessState());
     }).catchError((error) {
       emit(SocialCreatePostErrorState(error.toString()));
     });
   }
-  List<PostModel> posts =[];
-  void getPosts(){
+
+  List<PostModel> posts = [];
+  List<String> postsId = [];
+  List<int> likes = [];
+  void getPosts() {
+    FirebaseFirestore.instance.collection('posts').get().then((value) {
+      for (var element in value.docs) {
+        element.reference.collection('likes').get().then((value) {
+          likes.add(value.docs.length);
+          postsId.add(element.id);
+          posts.add(PostModel.fromJson(element.data()));
+        }).catchError((error) {});
+      }
+      emit(SocialGetPostsSuccessStates());
+    }).catchError((error) {
+      emit(SocialGetPostsErrorStates(error.toString()));
+    });
+  }
+
+  void likePost(String postId) {
     FirebaseFirestore.instance
         .collection('posts')
-        .get()
-        .then((value){
-          for (var element in value.docs) {
-            posts.add(PostModel.fromJson(element.data()));
-          }
-          emit(SocialGetPostsLoadingStates());
-    })
-        .catchError((error){
-          emit(SocialGetPostsErrorStates(error.toString()));
+        .doc(postId)
+        .collection('likes')
+        .doc(userModel?.uId)
+        .set({'like': true}).then((value) {
+      emit(SocialLikePostsSuccessStates());
+    }).catchError((error) {
+      emit(SocialLikePostsErrorStates(error.toString()));
+    });
+  }
+  void commentPost(String postId , String text){
+    FirebaseFirestore.instance.collection('posts')
+        .doc(postId)
+        .collection('comments')
+        .doc(userModel?.uId)
+        .set({
+      'comment' : text
+    }).then((value){
+      emit(SocialCommentPostsSuccessStates());
+    }).catchError((error){
+      emit(SocialCommentPostsErrorStates(error.toString()));
     });
   }
 }
