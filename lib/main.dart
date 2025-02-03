@@ -7,10 +7,12 @@ import 'package:social_application/shared_preference/cash_helper.dart';
 import 'app_cubit/Social_cubit.dart';
 import 'app_cubit/blocobserver.dart';
 import 'componants/constans.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  //await FirebaseAppCheck.instance.activate();
   Bloc.observer = MyBlocObserver();
   await CashHelper.init();
   uId = CashHelper.getData(key: 'uId');

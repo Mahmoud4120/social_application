@@ -6,6 +6,12 @@ class SocialGetUserErrorStates extends SocialStates{
   final String error;
   SocialGetUserErrorStates(this.error);
 }
+class SocialGetAllUserLoadingStates extends SocialStates{}
+class SocialGetAllUserSuccessStates extends SocialStates{}
+class SocialGetAllUserErrorStates extends SocialStates{
+  final String error;
+  SocialGetAllUserErrorStates(this.error);
+}
 class SocialGetPostsLoadingStates extends SocialStates{}
 class SocialGetPostsSuccessStates extends SocialStates{}
 class SocialGetPostsErrorStates extends SocialStates{
@@ -49,3 +55,8 @@ class SocialCreatePostSuccessState extends SocialStates{}
 class GetNewPostImageErrorStates extends SocialStates{}
 class GetNewPostImageSuccessStates extends SocialStates{}
 class SocialRemovePostImageState extends SocialStates{}
+//chat
+class SocialSendMessageSuccessStates extends SocialStates{}
+class SocialSendMessageErrorStates extends SocialStates{}
+class SocialReceiveMessageSuccessState extends SocialStates{}
+class SocialReceiveMessageErrorState extends SocialStates{}
